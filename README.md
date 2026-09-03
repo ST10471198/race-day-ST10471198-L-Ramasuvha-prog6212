@@ -77,7 +77,7 @@ The system uses a relational database with the following entities:
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/yourusername/RaceDay.git
+git clone https://github.com/ST10471198/RaceDay.git
 cd RaceDay
 ```
 
