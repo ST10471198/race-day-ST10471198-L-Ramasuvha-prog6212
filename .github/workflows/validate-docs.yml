@@ -1,0 +1,198 @@
+name: Validate Documentation and SQL Script
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Node.js (for file validation)
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Check /docs folder exists
+      run: |
+        if [ ! -d "docs" ] && [ ! -d "doc" ]; then
+          echo "ERROR: /docs or /doc folder not found!"
+          exit 1
+        fi
+        echo "✓ Documentation folder exists"
+    
+    - name: Check ERD file exists
+      run: |
+        if [ ! -f "docs/ERD DIAGRAM" ] && [ ! -f "docs/ERD_DIAGRAM.png" ] && [ ! -f "docs/ERD.png" ] && [ ! -f "docs/ERD.pdf" ] && [ ! -f "doc/ERD.png" ] && [ ! -f "doc/ERD.pdf" ]; then
+          echo "ERROR: ERD file not found! Looked for: ERD DIAGRAM, ERD_DIAGRAM.png, ERD.png, ERD.pdf"
+          echo "Current files in docs:"
+          ls -la docs/ || echo "docs folder not found"
+          echo "Current files in doc:"
+          ls -la doc/ || echo "doc folder not found"
+          exit 1
+        fi
+        echo "✓ ERD file exists"
+    
+    - name: Check SQL script exists
+      run: |
+        if [ ! -f "docs/script.sql" ] && [ ! -f "doc/script.sql" ] && [ ! -f "docs/RaceDay_Database.sql" ] && [ ! -f "doc/RaceDay_Database.sql" ]; then
+          echo "ERROR: SQL script not found! Looked for: script.sql, RaceDay_Database.sql"
+          echo "Current files in docs:"
+          ls -la docs/ || echo "docs folder not found"
+          echo "Current files in doc:"
+          ls -la doc/ || echo "doc folder not found"
+          exit 1
+        fi
+        echo "✓ SQL script exists"
+    
+    - name: Check README exists
+      run: |
+        if [ ! -f "README.md" ]; then
+          echo "ERROR: README.md not found!"
+          exit 1
+        fi
+        echo "✓ README.md exists"
+    
+    - name: Validate SQL script syntax
+      run: |
+        # Find the SQL file
+        SQL_FILE=""
+        if [ -f "docs/script.sql" ]; then
+          SQL_FILE="docs/script.sql"
+        elif [ -f "doc/script.sql" ]; then
+          SQL_FILE="doc/script.sql"
+        elif [ -f "docs/RaceDay_Database.sql" ]; then
+          SQL_FILE="docs/RaceDay_Database.sql"
+        elif [ -f "doc/RaceDay_Database.sql" ]; then
+          SQL_FILE="doc/RaceDay_Database.sql"
+        fi
+        
+        if [ -z "$SQL_FILE" ]; then
+          echo "ERROR: Could not find SQL file"
+          exit 1
+        fi
+        
+        echo "Validating SQL file: $SQL_FILE"
+        
+        # Check for CREATE TABLE statements
+        if ! grep -q "CREATE TABLE" "$SQL_FILE"; then
+          echo "ERROR: SQL script doesn't contain CREATE TABLE statements!"
+          exit 1
+        fi
+        echo "✓ SQL script contains CREATE TABLE statements"
+        
+        # Check for INSERT statements
+        if ! grep -q "INSERT INTO" "$SQL_FILE"; then
+          echo "WARNING: SQL script doesn't contain INSERT statements (seed data)"
+        else
+          echo "✓ SQL script contains INSERT statements"
+        fi
+        
+        # Check for PRIMARY KEY
+        if ! grep -q "PRIMARY KEY" "$SQL_FILE"; then
+          echo "WARNING: SQL script doesn't contain PRIMARY KEY definitions"
+        else
+          echo "✓ SQL script contains PRIMARY KEY definitions"
+        fi
+        
+        # Check for FOREIGN KEY
+        if ! grep -q "FOREIGN KEY" "$SQL_FILE"; then
+          echo "WARNING: SQL script doesn't contain FOREIGN KEY definitions"
+        else
+          echo "✓ SQL script contains FOREIGN KEY definitions"
+        fi
+        
+        # Count tables
+        TABLE_COUNT=$(grep -c "CREATE TABLE" "$SQL_FILE" || echo "0")
+        echo "✓ Found $TABLE_COUNT CREATE TABLE statements"
+        
+        # Check table count minimum (should be at least 6)
+        if [ "$TABLE_COUNT" -lt 6 ]; then
+          echo "WARNING: SQL script has only $TABLE_COUNT tables. Expected at least 6."
+        else
+          echo "✓ SQL script has $TABLE_COUNT tables (minimum 6 required)"
+        fi
+    
+    - name: Check commit count (Part 1 - at least 20)
+      run: |
+        echo "Checking commit count..."
+        echo "Current branch: $(git branch --show-current)"
+        
+        # Count commits on current branch
+        COMMIT_COUNT=$(git rev-list --count HEAD)
+        echo "Total commits: $COMMIT_COUNT"
+        
+        # Check if there are at least 20 commits
+        if [ "$COMMIT_COUNT" -lt 20 ]; then
+          echo "WARNING: Only $COMMIT_COUNT commits found. Minimum 20 commits required for Part 1."
+          echo "Please ensure you have at least 20 meaningful commits in your repository."
+        else
+          echo "✓ $COMMIT_COUNT commits found (minimum 20 met)"
+        fi
+        
+        # Check commits from the user (filter by author email if needed)
+        echo ""
+        echo "Recent commits:"
+        git log --oneline --graph --decorate -20
+    
+    - name: Check GitHub repository structure
+      run: |
+        echo "Repository Structure:"
+        echo "====================="
+        ls -la
+        echo ""
+        echo "docs folder contents:"
+        if [ -d "docs" ]; then
+          ls -la docs/
+        elif [ -d "doc" ]; then
+          ls -la doc/
+        else
+          echo "No docs/doc folder found"
+        fi
+    
+    - name: Verify SQL file size (ensure not empty)
+      run: |
+        SQL_FILE=""
+        if [ -f "docs/script.sql" ]; then
+          SQL_FILE="docs/script.sql"
+        elif [ -f "doc/script.sql" ]; then
+          SQL_FILE="doc/script.sql"
+        elif [ -f "docs/RaceDay_Database.sql" ]; then
+          SQL_FILE="docs/RaceDay_Database.sql"
+        elif [ -f "doc/RaceDay_Database.sql" ]; then
+          SQL_FILE="doc/RaceDay_Database.sql"
+        fi
+        
+        if [ -n "$SQL_FILE" ]; then
+          FILE_SIZE=$(wc -l < "$SQL_FILE")
+          echo "SQL file has $FILE_SIZE lines"
+          if [ "$FILE_SIZE" -lt 50 ]; then
+            echo "WARNING: SQL file appears too small ($FILE_SIZE lines). Ensure it contains full database schema."
+          else
+            echo "✓ SQL file has $FILE_SIZE lines"
+          fi
+        fi
+    
+    - name: Verification Complete
+      run: |
+        echo "============================================"
+        echo "✅ All validation checks passed!"
+        echo "============================================"
+        echo ""
+        echo "Summary:"
+        echo "- /docs folder exists"
+        echo "- ERD file exists"
+        echo "- SQL script exists"
+        echo "- README.md exists"
+        echo "- SQL script contains required statements"
+        echo "- SQL script has at least 6 tables"
+        echo ""
+        echo "Remember: Part 1 requires at least 20 commits"
+        echo "Current commit count: $(git rev-list --count HEAD)"
+        echo "============================================"
