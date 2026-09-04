@@ -142,3 +142,60 @@ CREATE TABLE Result
     CONSTRAINT UQ_Result_Event_Participant UNIQUE (eventID, participantID)
 );
 GO
+
+-- Create Indexes for Performance Optimization
+-- Indexes for foreign key columns to improve join performance
+CREATE INDEX IX_Event_OrganiserID ON Event(organiserID);
+CREATE INDEX IX_Category_EventID ON Category(eventID);
+CREATE INDEX IX_Weather_EventID ON Weather(eventID);
+CREATE INDEX IX_Result_EventID ON Result(eventID);
+CREATE INDEX IX_Result_ParticipantID ON Result(participantID);
+CREATE INDEX IX_Result_CategoryID ON Result(categoryID);
+
+-- Indexes for commonly searched columns
+CREATE INDEX IX_Event_Date ON Event(date);
+CREATE INDEX IX_Event_Status ON Event(status);
+CREATE INDEX IX_Participant_DateOfBirth ON Participant(dateOfBirth);
+GO
+
+-- INSERT Statements for Sample Data
+
+--Insert Organisers (3 organisers to exceed minimum requirement)
+INSERT INTO Organiser (name, email, phone, passwordHash, createdAt)
+VALUES 
+    ('Cape Town Marathon Association', 'info@capetownmarathon.co.za', '+27 21 555 0123', 
+     'hashed_password_1', GETDATE()),
+    ('Joburg Sports Events', 'events@joburgsports.co.za', '+27 11 555 0456', 
+     'hashed_password_2', GETDATE()),
+    ('Durban Running Club', 'info@durbanrunning.co.za', '+27 31 555 0789', 
+     'hashed_password_3', GETDATE());
+GO
+
+--Insert Participants (4 participants to exceed minimum requirement)
+INSERT INTO Participant (name, email, passwordHash, dateOfBirth, idNumber, emergencyContact, createdAt)
+VALUES 
+    ('Thabo Mokoena', 'thabo.m@email.com', 'hashed_password_p1', '1990-03-15', 
+     '9003151234567', 'Lerato Mokoena - 082 123 4567', GETDATE()),
+    ('Sarah Johnson', 'sarah.j@email.com', 'hashed_password_p2', '1985-07-22', 
+     '8507221234567', 'Mike Johnson - 083 234 5678', GETDATE()),
+    ('Michael Ndlovu', 'michael.n@email.com', 'hashed_password_p3', '1995-11-08', 
+     '9511081234567', 'Precious Ndlovu - 084 345 6789', GETDATE()),
+    ('Emma Williams', 'emma.w@email.com', 'hashed_password_p4', '1988-09-30', 
+     '8809301234567', 'James Williams - 085 456 7890', GETDATE());
+GO
+
+--Insert Events (3 events as required)
+INSERT INTO Event (organiserID, name, description, date, location, maxParticipants, status)
+VALUES 
+    (1, 'Cape Town Marathon 2026', 
+     'The premier marathon event in South Africa, featuring a scenic route along the Atlantic seaboard.', 
+     '2026-10-15', 'Green Point Stadium, Cape Town', 15000, 'Open'),
+    
+    (2, 'Joburg City Run 2026', 
+     'A fast and flat city course through the heart of Johannesburg, perfect for PB attempts.', 
+     '2026-09-20', 'Sandton Convention Centre, Johannesburg', 8000, 'Open'),
+    
+    (3, 'Durban Beach Run 2026', 
+     'A stunning coastal run along the Golden Mile, offering beautiful ocean views.', 
+     '2026-11-05', 'Durban Beachfront, Durban', 5000, 'Upcoming');
+GO
