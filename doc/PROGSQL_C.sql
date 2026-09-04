@@ -90,3 +90,55 @@ CREATE TABLE Category
         ON DELETE CASCADE
 );
 GO
+
+
+--Weather table
+CREATE TABLE Weather
+(
+    weatherID INT IDENTITY(1,1) PRIMARY KEY,
+    eventID INT NOT NULL,
+    forecastDate DATE NOT NULL,
+    temperature DECIMAL(5,2) NULL,
+    condition VARCHAR(100) NULL,
+    windSpeed DECIMAL(5,2) NULL,
+    humidity DECIMAL(5,2) NULL,
+
+    CONSTRAINT FK_Weather_Event
+        FOREIGN KEY (eventID)
+        REFERENCES Event(eventID)
+        ON DELETE CASCADE,
+    
+    CONSTRAINT UQ_Weather_Event_Date UNIQUE (eventID, forecastDate)
+);
+GO
+
+--Result table
+CREATE TABLE Result
+(
+    resultID INT IDENTITY(1,1) PRIMARY KEY,
+    eventID INT NOT NULL,
+    participantID INT NOT NULL,
+    categoryID INT NOT NULL,
+    finishTime TIME NULL,
+    position INT NULL CHECK (position > 0),
+    status VARCHAR(50) NOT NULL DEFAULT 'Registered'
+        CHECK (status IN ('Registered', 'Started', 'Finished', 'DNF', 'DNS', 'Disqualified')),
+
+    CONSTRAINT FK_Result_Event
+        FOREIGN KEY (eventID)
+        REFERENCES Event(eventID)
+        ON DELETE CASCADE,
+
+    CONSTRAINT FK_Result_Participant
+        FOREIGN KEY (participantID)
+        REFERENCES Participant(participantID)
+        ON DELETE CASCADE,
+
+    CONSTRAINT FK_Result_Category
+        FOREIGN KEY (categoryID)
+        REFERENCES Category(categoryID),
+    
+    -- Ensure a participant can only be enrolled once per event
+    CONSTRAINT UQ_Result_Event_Participant UNIQUE (eventID, participantID)
+);
+GO
