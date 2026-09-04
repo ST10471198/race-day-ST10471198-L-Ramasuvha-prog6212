@@ -199,3 +199,76 @@ VALUES
      'A stunning coastal run along the Golden Mile, offering beautiful ocean views.', 
      '2026-11-05', 'Durban Beachfront, Durban', 5000, 'Upcoming');
 GO
+
+-- Insert Categories for each event (3 categories per event = 9 total)
+-- Event 1: Cape Town Marathon
+INSERT INTO Category (eventID, name, distanceKM, startTime, ageMin, ageMax, entryFee)
+VALUES 
+    (1, 'Full Marathon (Elite)', 42.20, '06:00:00', 18, 65, 850.00),
+    (1, 'Half Marathon', 21.10, '06:30:00', 16, 70, 550.00),
+    (1, 'Fun Run (10km)', 10.00, '07:30:00', 12, 75, 250.00);
+
+-- Event 2: Joburg City Run
+INSERT INTO Category (eventID, name, distanceKM, startTime, ageMin, ageMax, entryFee)
+VALUES 
+    (2, '21km Run', 21.10, '07:00:00', 16, 65, 450.00),
+    (2, '10km Challenge', 10.00, '07:30:00', 14, 70, 300.00),
+    (2, '5km Fun Walk', 5.00, '08:00:00', 8, 75, 150.00);
+
+-- Event 3: Durban Beach Run
+INSERT INTO Category (eventID, name, distanceKM, startTime, ageMin, ageMax, entryFee)
+VALUES 
+    (3, '15km Beach Run', 15.00, '06:30:00', 16, 60, 400.00),
+    (3, '8km Coastal Run', 8.00, '07:00:00', 14, 65, 280.00),
+    (3, '5km Family Run', 5.00, '07:30:00', 6, 75, 180.00);
+GO
+
+--Insert Weather data (4 days of forecasts per event = 12 records)
+-- Cape Town Marathon weather (Event 1)
+INSERT INTO Weather (eventID, forecastDate, temperature, condition, windSpeed, humidity)
+VALUES 
+    (1, '2026-10-12', 18.5, 'Partly Cloudy', 12.5, 65.0),
+    (1, '2026-10-13', 19.0, 'Sunny', 10.0, 60.0),
+    (1, '2026-10-14', 17.5, 'Light Rain', 15.0, 75.0),
+    (1, '2026-10-15', 20.0, 'Sunny', 8.0, 55.0); -- Race day
+
+-- Joburg City Run weather (Event 2)
+INSERT INTO Weather (eventID, forecastDate, temperature, condition, windSpeed, humidity)
+VALUES 
+    (2, '2026-09-17', 22.0, 'Clear', 5.0, 45.0),
+    (2, '2026-09-18', 23.5, 'Sunny', 7.0, 42.0),
+    (2, '2026-09-19', 21.0, 'Partly Cloudy', 10.0, 50.0),
+    (2, '2026-09-20', 24.0, 'Sunny', 6.0, 40.0); -- Race day
+
+-- Durban Beach Run weather (Event 3)
+INSERT INTO Weather (eventID, forecastDate, temperature, condition, windSpeed, humidity)
+VALUES 
+    (3, '2026-11-02', 25.0, 'Sunny', 8.0, 65.0),
+    (3, '2026-11-03', 26.5, 'Sunny', 10.0, 60.0),
+    (3, '2026-11-04', 24.0, 'Partly Cloudy', 12.0, 70.0),
+    (3, '2026-11-05', 27.0, 'Sunny', 7.0, 55.0); -- Race day
+GO
+
+--Insert Results/Enrolments (sample enrolments across all events)
+-- Event 1: Cape Town Marathon enrolments
+INSERT INTO Result (eventID, participantID, categoryID, status)
+VALUES 
+    (1, 1, 1, 'Registered'),  -- Thabo in Full Marathon
+    (1, 2, 2, 'Registered'),  -- Sarah in Half Marathon
+    (1, 3, 3, 'Registered'),  -- Michael in Fun Run
+    (1, 4, 2, 'Registered');  -- Emma in Half Marathon
+
+-- Event 2: Joburg City Run enrolments
+INSERT INTO Result (eventID, participantID, categoryID, status)
+VALUES 
+    (2, 1, 4, 'Registered'),  -- Thabo in 21km Run
+    (2, 2, 5, 'Registered'),  -- Sarah in 10km Challenge
+    (2, 3, 6, 'Registered');  -- Michael in 5km Fun Walk
+
+-- Event 3: Durban Beach Run enrolments
+INSERT INTO Result (eventID, participantID, categoryID, status)
+VALUES 
+    (3, 4, 8, 'Registered'),  -- Emma in 8km Coastal Run
+    (3, 2, 9, 'Registered'),  -- Sarah in 5km Family Run
+    (3, 1, 7, 'Registered');  -- Thabo in 15km Beach Run
+GO
