@@ -1,7 +1,7 @@
 -- ============================================================
 -- Database: RaceDay System
 -- Description: Full database schema for RaceDay event management
--- Author: [Your Name]
+-- Author: [Lufuno Ramasuvha]
 -- Date: 2026-09-04
 -- ============================================================
 
