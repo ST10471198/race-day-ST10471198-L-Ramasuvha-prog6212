@@ -103,7 +103,9 @@ jobs:
         echo "Checking for SQL script in doc folder"
         echo "============================================"
         
-        if [ -f "doc/script.sql" ]; then
+        if [ -f "doc/PROGSQL_C.sql" ]; then
+          echo "✅ Found: doc/PROGSQL_C.sql"
+        elif [ -f "doc/script.sql" ]; then
           echo "✅ Found: doc/script.sql"
         elif [ -f "doc/RaceDay_Database.sql" ]; then
           echo "✅ Found: doc/RaceDay_Database.sql"
@@ -113,7 +115,7 @@ jobs:
           echo "✅ Found: doc/schema.sql"
         else
           echo "❌ ERROR: No SQL script found in doc folder!"
-          echo "Looking for: script.sql, RaceDay_Database.sql, database.sql"
+          echo "Looking for: PROGSQL_C.sql, script.sql, RaceDay_Database.sql, database.sql"
           echo "Current files in doc:"
           ls -la doc/
           exit 1
@@ -160,16 +162,27 @@ jobs:
     - name: Validate SQL script syntax
       run: |
         echo "============================================"
-        echo "Validating SQL Script: doc/script.sql"
+        echo "Validating SQL Script"
         echo "============================================"
         
-        SQL_FILE="doc/script.sql"
-        
-        # Check if file exists
-        if [ ! -f "$SQL_FILE" ]; then
-          echo "❌ SQL file not found: $SQL_FILE"
+        # Find the SQL file
+        SQL_FILE=""
+        if [ -f "doc/PROGSQL_C.sql" ]; then
+          SQL_FILE="doc/PROGSQL_C.sql"
+        elif [ -f "doc/script.sql" ]; then
+          SQL_FILE="doc/script.sql"
+        elif [ -f "doc/RaceDay_Database.sql" ]; then
+          SQL_FILE="doc/RaceDay_Database.sql"
+        elif [ -f "doc/database.sql" ]; then
+          SQL_FILE="doc/database.sql"
+        elif [ -f "doc/schema.sql" ]; then
+          SQL_FILE="doc/schema.sql"
+        else
+          echo "❌ SQL file not found!"
           exit 1
         fi
+        
+        echo "Using SQL file: $SQL_FILE"
         
         # Check file size
         FILE_SIZE=$(wc -l < "$SQL_FILE")
@@ -265,6 +278,24 @@ jobs:
           echo "  ⚠️ Event seed data missing"
         fi
         
+        if grep -qi "INSERT INTO.*Category" "$SQL_FILE"; then
+          echo "  ✅ Category seed data found"
+        else
+          echo "  ⚠️ Category seed data missing"
+        fi
+        
+        if grep -qi "INSERT INTO.*Weather" "$SQL_FILE"; then
+          echo "  ✅ Weather seed data found"
+        else
+          echo "  ⚠️ Weather seed data missing"
+        fi
+        
+        if grep -qi "INSERT INTO.*Result" "$SQL_FILE"; then
+          echo "  ✅ Result seed data found"
+        else
+          echo "  ⚠️ Result seed data missing"
+        fi
+        
         echo "============================================"
     
     - name: Validate ERD file
@@ -354,6 +385,25 @@ jobs:
         else
           echo "❌ ERROR: Only $COMMIT_COUNT commits found!"
           echo "Required: Minimum of 20 meaningful commits for Part 1"
+          echo ""
+          echo "📝 HOW TO FIX THIS:"
+          echo "1. You need to make at least $((20 - COMMIT_COUNT)) more commits"
+          echo "2. Make meaningful changes to different files"
+          echo "3. Each commit should have a descriptive message"
+          echo "4. Suggested commits to make:"
+          echo "   - Update README.md with more details"
+          echo "   - Add comments to SQL script"
+          echo "   - Update API endpoint plan"
+          echo "   - Add more seed data to SQL script"
+          echo "   - Format/beautify your SQL script"
+          echo "   - Update ERD diagram"
+          echo "   - Add documentation for each table"
+          echo "   - Create a .gitignore file"
+          echo "   - Add sample queries to SQL script"
+          echo "   - Update your workflow file"
+          echo ""
+          echo "Current commits ($COMMIT_COUNT/20):"
+          git log --oneline --graph -10
           exit 1
         fi
         
@@ -387,44 +437,58 @@ jobs:
         echo "============================================"
     
     - name: Generate validation summary
+      if: success() || failure()
       run: |
         COMMIT_COUNT=$(git rev-list --count HEAD)
         
         echo "============================================"
-        echo "✅ VALIDATION SUMMARY"
+        if [ "$COMMIT_COUNT" -ge 20 ]; then
+          echo "✅ VALIDATION SUMMARY - PASSED"
+        else
+          echo "⚠️ VALIDATION SUMMARY - NEEDS WORK"
+        fi
         echo "============================================"
         echo ""
         echo "📁 Documentation Check:"
-        echo "  ✅ doc folder exists"
-        echo "  ✅ ERD file exists"
-        echo "  ✅ SQL script exists"
-        echo "  ✅ API Endpoint Plan exists"
-        echo "  ✅ README.md exists"
+        if [ -d "doc" ]; then echo "  ✅ doc folder exists"; else echo "  ❌ doc folder missing"; fi
+        if [ -f "doc/Entity Relationship Diagram.png" ] || [ -f "doc/ERD.png" ]; then echo "  ✅ ERD file exists"; else echo "  ❌ ERD file missing"; fi
+        if [ -f "doc/PROGSQL_C.sql" ] || [ -f "doc/script.sql" ]; then echo "  ✅ SQL script exists"; else echo "  ❌ SQL script missing"; fi
+        if [ -f "doc/API_ENDPOINT_PLAN.pdf" ]; then echo "  ✅ API Endpoint Plan exists"; else echo "  ⚠️ API Endpoint Plan missing"; fi
+        if [ -f "README.md" ]; then echo "  ✅ README.md exists"; else echo "  ❌ README.md missing"; fi
         echo ""
         echo "📊 SQL Validation:"
-        echo "  ✅ CREATE TABLE statements found"
-        echo "  ✅ PRIMARY KEY definitions found"
-        echo "  ✅ FOREIGN KEY definitions found"
-        echo "  ✅ INSERT INTO statements found (seed data)"
+        SQL_FILE=""
+        if [ -f "doc/PROGSQL_C.sql" ]; then SQL_FILE="doc/PROGSQL_C.sql"; 
+        elif [ -f "doc/script.sql" ]; then SQL_FILE="doc/script.sql"; fi
+        if [ -n "$SQL_FILE" ]; then
+          if grep -q "CREATE TABLE" "$SQL_FILE" 2>/dev/null; then echo "  ✅ CREATE TABLE found"; else echo "  ❌ CREATE TABLE missing"; fi
+          if grep -q "PRIMARY KEY" "$SQL_FILE" 2>/dev/null; then echo "  ✅ PRIMARY KEY found"; else echo "  ❌ PRIMARY KEY missing"; fi
+          if grep -q "FOREIGN KEY" "$SQL_FILE" 2>/dev/null; then echo "  ✅ FOREIGN KEY found"; else echo "  ⚠️ FOREIGN KEY missing"; fi
+          if grep -q "INSERT INTO" "$SQL_FILE" 2>/dev/null; then echo "  ✅ INSERT INTO found"; else echo "  ⚠️ INSERT INTO missing"; fi
+        fi
         echo ""
         echo "📝 Commit Validation:"
-        echo "  ✅ $COMMIT_COUNT commits found (minimum 20 met)"
+        if [ "$COMMIT_COUNT" -ge 20 ]; then
+          echo "  ✅ $COMMIT_COUNT/20 commits - Minimum met"
+        else
+          echo "  ❌ $COMMIT_COUNT/20 commits - Need $((20 - COMMIT_COUNT)) more"
+        fi
         echo ""
         echo "🔧 CI/CD Validation:"
-        echo "  ✅ .github/workflows/validate-docs.yml exists"
-        echo ""
-        echo "🏗️ Repository Status:"
-        echo "  ✅ Repository structure is valid"
-        echo "  ✅ All required files are present"
-        echo "  ✅ No missing documentation"
+        if [ -f ".github/workflows/validate-docs.yml" ]; then echo "  ✅ Workflow file exists"; else echo "  ⚠️ Workflow file missing"; fi
         echo ""
         echo "============================================"
-        echo "🎉 All validation checks passed successfully!"
-        echo "✅ Green Build - Ready for Submission"
+        if [ "$COMMIT_COUNT" -ge 20 ]; then
+          echo "🎉 All validation checks passed successfully!"
+          echo "✅ Green Build - Ready for Submission"
+        else
+          echo "⚠️ Please make $((20 - COMMIT_COUNT)) more commits to reach 20 minimum"
+          echo "📝 See instructions above for what to commit"
+        fi
         echo "============================================"
     
     - name: Upload validation report
-      uses: actions/upload-artifact@v4  # Updated to v4
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: validation-report
