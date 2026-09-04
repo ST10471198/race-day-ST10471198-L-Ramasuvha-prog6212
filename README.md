@@ -209,7 +209,8 @@ The repository includes a GitHub Actions CI/CD workflow that automatically valid
 
 ### CI/CD Status
 
-![CI/CD Build Passing](screenshot-ci-success.png)
+<img width="1370" height="492" alt="image" src="https://github.com/user-attachments/assets/164df837-6120-420f-b804-1dc0f9a7037c" />
+
 
 ---
 
