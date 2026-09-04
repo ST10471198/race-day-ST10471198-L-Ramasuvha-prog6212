@@ -26,7 +26,7 @@ GO
 
 -- CREATE TABLE Statements for all entities
 
--- 1. Organiser table
+--Organiser table
 CREATE TABLE Organiser
 (
     organiserID INT IDENTITY(1,1) PRIMARY KEY,
@@ -38,7 +38,7 @@ CREATE TABLE Organiser
 );
 GO
 
--- 2. Participant table
+--Participant table
 CREATE TABLE Participant
 (
     participantID INT IDENTITY(1,1) PRIMARY KEY,
@@ -52,7 +52,7 @@ CREATE TABLE Participant
 );
 GO
 
--- 3. Event table
+--Event table
 CREATE TABLE Event
 (
     eventID INT IDENTITY(1,1) PRIMARY KEY,
@@ -68,6 +68,25 @@ CREATE TABLE Event
     CONSTRAINT FK_Event_Organiser
         FOREIGN KEY (organiserID)
         REFERENCES Organiser(organiserID)
+        ON DELETE CASCADE
+);
+GO
+
+--Category table
+CREATE TABLE Category
+(
+    categoryID INT IDENTITY(1,1) PRIMARY KEY,
+    eventID INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    distanceKM DECIMAL(6,2) NOT NULL CHECK (distanceKM > 0),
+    startTime TIME NOT NULL,
+    ageMin INT NOT NULL CHECK (ageMin >= 0),
+    ageMax INT NOT NULL CHECK (ageMax > ageMin),
+    entryFee DECIMAL(10,2) NOT NULL CHECK (entryFee >= 0),
+
+    CONSTRAINT FK_Category_Event
+        FOREIGN KEY (eventID)
+        REFERENCES Event(eventID)
         ON DELETE CASCADE
 );
 GO
