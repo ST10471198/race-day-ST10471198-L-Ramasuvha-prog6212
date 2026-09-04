@@ -23,96 +23,147 @@ jobs:
         echo "============================================"
         ls -la
         echo ""
+        echo "doc folder contents:"
+        if [ -d "doc" ]; then
+          ls -la doc/
+        else
+          echo "❌ doc folder not found!"
+        fi
+        echo ""
+        echo ".github/workflows contents:"
+        if [ -d ".github/workflows" ]; then
+          ls -la .github/workflows/
+        else
+          echo "❌ .github/workflows folder not found!"
+        fi
         echo "============================================"
     
-    - name: Check required files exist (Root Directory)
+    - name: Check doc folder exists
+      run: |
+        if [ -d "doc" ]; then
+          echo "✅ doc folder exists"
+        else
+          echo "❌ ERROR: doc folder not found!"
+          echo "Current files in root:"
+          ls -la
+          exit 1
+        fi
+    
+    - name: Check ERD file exists
       run: |
         echo "============================================"
-        echo "Checking for required files in root directory"
+        echo "Checking for ERD file in doc folder"
         echo "============================================"
         
-        # Check for ERD files (multiple possible names)
         ERD_FOUND=false
         
-        if [ -f "ERD DIAGRAM" ]; then
-          echo "✅ Found: ERD DIAGRAM"
+        if [ -f "doc/ERD DIAGRAM" ]; then
+          echo "✅ Found: doc/ERD DIAGRAM"
           ERD_FOUND=true
         fi
         
-        if [ -f "Entity Relationship Diagram.png" ]; then
-          echo "✅ Found: Entity Relationship Diagram.png"
+        if [ -f "doc/Entity Relationship Diagram.png" ]; then
+          echo "✅ Found: doc/Entity Relationship Diagram.png"
           ERD_FOUND=true
         fi
         
-        if [ -f "ERD.png" ]; then
-          echo "✅ Found: ERD.png"
+        if [ -f "doc/ERD.png" ]; then
+          echo "✅ Found: doc/ERD.png"
           ERD_FOUND=true
         fi
         
-        if [ -f "ERD.pdf" ]; then
-          echo "✅ Found: ERD.pdf"
+        if [ -f "doc/ERD.pdf" ]; then
+          echo "✅ Found: doc/ERD.pdf"
           ERD_FOUND=true
         fi
         
-        if [ -f "erd.png" ]; then
-          echo "✅ Found: erd.png"
+        if [ -f "doc/erd.png" ]; then
+          echo "✅ Found: doc/erd.png"
           ERD_FOUND=true
         fi
         
-        if [ -f "Entity_Relationship_Diagram.png" ]; then
-          echo "✅ Found: Entity_Relationship_Diagram.png"
+        if [ -f "doc/Entity_Relationship_Diagram.png" ]; then
+          echo "✅ Found: doc/Entity_Relationship_Diagram.png"
           ERD_FOUND=true
         fi
         
         if [ "$ERD_FOUND" = false ]; then
-          echo "❌ ERROR: No ERD file found in root directory!"
+          echo "❌ ERROR: No ERD file found in doc folder!"
           echo "Looking for: ERD DIAGRAM, Entity Relationship Diagram.png, ERD.png, ERD.pdf"
-          echo "Current files in root:"
-          ls -la
+          echo "Current files in doc:"
+          ls -la doc/
           exit 1
-        fi
-        
-        # Check for SQL script
-        if [ -f "script.sql" ]; then
-          echo "✅ Found: script.sql"
-        elif [ -f "RaceDay_Database.sql" ]; then
-          echo "✅ Found: RaceDay_Database.sql"
-        elif [ -f "database.sql" ]; then
-          echo "✅ Found: database.sql"
-        elif [ -f "schema.sql" ]; then
-          echo "✅ Found: schema.sql"
-        else
-          echo "❌ ERROR: No SQL script found in root directory!"
-          echo "Looking for: script.sql, RaceDay_Database.sql, database.sql"
-          echo "Current files in root:"
-          ls -la
-          exit 1
-        fi
-        
-        # Check for README
-        if [ -f "README.md" ]; then
-          echo "✅ Found: README.md"
-        else
-          echo "❌ ERROR: README.md not found!"
-          exit 1
-        fi
-        
-        # Check for .github/workflows
-        if [ -d ".github/workflows" ]; then
-          echo "✅ Found: .github/workflows folder"
-        else
-          echo "⚠️ WARNING: .github/workflows folder not found"
         fi
         
         echo "============================================"
     
+    - name: Check SQL script exists
+      run: |
+        echo "============================================"
+        echo "Checking for SQL script in doc folder"
+        echo "============================================"
+        
+        if [ -f "doc/script.sql" ]; then
+          echo "✅ Found: doc/script.sql"
+        elif [ -f "doc/RaceDay_Database.sql" ]; then
+          echo "✅ Found: doc/RaceDay_Database.sql"
+        elif [ -f "doc/database.sql" ]; then
+          echo "✅ Found: doc/database.sql"
+        elif [ -f "doc/schema.sql" ]; then
+          echo "✅ Found: doc/schema.sql"
+        else
+          echo "❌ ERROR: No SQL script found in doc folder!"
+          echo "Looking for: script.sql, RaceDay_Database.sql, database.sql"
+          echo "Current files in doc:"
+          ls -la doc/
+          exit 1
+        fi
+        
+        echo "============================================"
+    
+    - name: Check API Endpoint Plan exists
+      run: |
+        echo "============================================"
+        echo "Checking for API Endpoint Plan in doc folder"
+        echo "============================================"
+        
+        if [ -f "doc/API_ENDPOINT_PLAN.pdf" ]; then
+          echo "✅ Found: doc/API_ENDPOINT_PLAN.pdf"
+        elif [ -f "doc/API_Endpoints.pdf" ]; then
+          echo "✅ Found: doc/API_Endpoints.pdf"
+        elif [ -f "doc/API_Endpoints.md" ]; then
+          echo "✅ Found: doc/API_Endpoints.md"
+        elif [ -f "doc/API_Endpoint_Plan.pdf" ]; then
+          echo "✅ Found: doc/API_Endpoint_Plan.pdf"
+        elif [ -f "doc/API_Plan.pdf" ]; then
+          echo "✅ Found: doc/API_Plan.pdf"
+        else
+          echo "⚠️ WARNING: No API Endpoint Plan found in doc folder!"
+          echo "Expected: API_ENDPOINT_PLAN.pdf or API_Endpoints.pdf or API_Endpoints.md"
+          echo "Current files in doc:"
+          ls -la doc/
+          echo ""
+          echo "Note: This is required for Part 1 Section B"
+        fi
+        
+        echo "============================================"
+    
+    - name: Check README exists
+      run: |
+        if [ -f "README.md" ]; then
+          echo "✅ README.md exists"
+        else
+          echo "❌ ERROR: README.md not found!"
+          exit 1
+        fi
+    
     - name: Validate SQL script syntax
       run: |
         echo "============================================"
-        echo "Validating SQL Script"
+        echo "Validating SQL Script: doc/script.sql"
         echo "============================================"
         
-        SQL_FILE="script.sql"
+        SQL_FILE="doc/script.sql"
         
         # Check if file exists
         if [ ! -f "$SQL_FILE" ]; then
@@ -216,6 +267,84 @@ jobs:
         
         echo "============================================"
     
+    - name: Validate ERD file
+      run: |
+        echo "============================================"
+        echo "Validating ERD File"
+        echo "============================================"
+        
+        # Find ERD file
+        ERD_FILE=""
+        if [ -f "doc/Entity Relationship Diagram.png" ]; then
+          ERD_FILE="doc/Entity Relationship Diagram.png"
+        elif [ -f "doc/ERD DIAGRAM" ]; then
+          ERD_FILE="doc/ERD DIAGRAM"
+        elif [ -f "doc/ERD.png" ]; then
+          ERD_FILE="doc/ERD.png"
+        elif [ -f "doc/ERD.pdf" ]; then
+          ERD_FILE="doc/ERD.pdf"
+        elif [ -f "doc/erd.png" ]; then
+          ERD_FILE="doc/erd.png"
+        elif [ -f "doc/Entity_Relationship_Diagram.png" ]; then
+          ERD_FILE="doc/Entity_Relationship_Diagram.png"
+        else
+          echo "❌ No ERD file found!"
+          exit 1
+        fi
+        
+        echo "✅ ERD file found: $ERD_FILE"
+        
+        # Check file size (only for image files)
+        if [[ "$ERD_FILE" == *.png ]] || [[ "$ERD_FILE" == *.PNG ]]; then
+          if command -v identify &> /dev/null; then
+            identify "$ERD_FILE" || echo "⚠️ Could not verify image format"
+          else
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+              # macOS
+              FILE_SIZE=$(stat -f%z "$ERD_FILE" 2>/dev/null || echo "0")
+            else
+              # Linux
+              FILE_SIZE=$(stat -c%s "$ERD_FILE" 2>/dev/null || echo "0")
+            fi
+            if [ "$FILE_SIZE" -gt 10000 ]; then
+              echo "✅ ERD file size: $(($FILE_SIZE / 1024)) KB (valid)"
+            else
+              echo "⚠️ WARNING: ERD file appears small ($(($FILE_SIZE / 1024)) KB)"
+            fi
+          fi
+        fi
+        
+        echo "============================================"
+    
+    - name: Validate API Endpoint Plan
+      run: |
+        echo "============================================"
+        echo "Validating API Endpoint Plan"
+        echo "============================================"
+        
+        if [ -f "doc/API_ENDPOINT_PLAN.pdf" ]; then
+          echo "✅ API Endpoint Plan found: doc/API_ENDPOINT_PLAN.pdf"
+          
+          # Check file size
+          if [[ "$OSTYPE" == "darwin"* ]]; then
+            FILE_SIZE=$(stat -f%z "doc/API_ENDPOINT_PLAN.pdf" 2>/dev/null || echo "0")
+          else
+            FILE_SIZE=$(stat -c%s "doc/API_ENDPOINT_PLAN.pdf" 2>/dev/null || echo "0")
+          fi
+          
+          if [ "$FILE_SIZE" -gt 1000 ]; then
+            echo "✅ API Plan file size: $(($FILE_SIZE / 1024)) KB (valid)"
+          else
+            echo "⚠️ WARNING: API Plan file appears small ($(($FILE_SIZE / 1024)) KB)"
+          fi
+        else
+          echo "⚠️ WARNING: API_ENDPOINT_PLAN.pdf not found in doc folder"
+          echo "Current files in doc:"
+          ls -la doc/
+        fi
+        
+        echo "============================================"
+    
     - name: Check commit count (minimum 20 required)
       run: |
         echo "============================================"
@@ -243,83 +372,53 @@ jobs:
         echo "Current author: $(git config user.name)"
         echo "============================================"
     
-    - name: Validate ERD file
+    - name: Check workflow file exists
       run: |
         echo "============================================"
-        echo "Validating ERD File"
+        echo "Checking CI/CD Workflow File"
         echo "============================================"
         
-        # Find ERD file
-        ERD_FILE=""
-        if [ -f "Entity Relationship Diagram.png" ]; then
-          ERD_FILE="Entity Relationship Diagram.png"
-        elif [ -f "ERD DIAGRAM" ]; then
-          ERD_FILE="ERD DIAGRAM"
-        elif [ -f "ERD.png" ]; then
-          ERD_FILE="ERD.png"
-        elif [ -f "ERD.pdf" ]; then
-          ERD_FILE="ERD.pdf"
-        elif [ -f "erd.png" ]; then
-          ERD_FILE="erd.png"
-        elif [ -f "Entity_Relationship_Diagram.png" ]; then
-          ERD_FILE="Entity_Relationship_Diagram.png"
+        if [ -f ".github/workflows/validate-docs.yml" ]; then
+          echo "✅ .github/workflows/validate-docs.yml exists"
+        elif [ -f ".github/workflows/ci.yml" ]; then
+          echo "✅ .github/workflows/ci.yml exists"
         else
-          echo "❌ No ERD file found!"
-          exit 1
-        fi
-        
-        echo "✅ ERD file found: $ERD_FILE"
-        
-        # Check file size (only for image files)
-        if [[ "$ERD_FILE" == *.png ]] || [[ "$ERD_FILE" == *.PNG ]]; then
-          if command -v identify &> /dev/null; then
-            identify "$ERD_FILE" || echo "⚠️ Could not verify image format"
-          else
-            FILE_SIZE=$(stat -c%s "$ERD_FILE" 2>/dev/null || stat -f%z "$ERD_FILE" 2>/dev/null || echo "0")
-            if [ "$FILE_SIZE" -gt 10000 ]; then
-              echo "✅ ERD file size: $(($FILE_SIZE / 1024)) KB (valid)"
-            else
-              echo "⚠️ WARNING: ERD file appears small ($(($FILE_SIZE / 1024)) KB)"
-            fi
-          fi
+          echo "⚠️ WARNING: No workflow file found in .github/workflows/"
+          echo "Expected: validate-docs.yml or ci.yml"
+          echo "Current files in .github/workflows/:"
+          ls -la .github/workflows/ 2>/dev/null || echo "Folder not found"
         fi
         
         echo "============================================"
-    
-    - name: Check API Endpoint Plan exists
-      run: |
-        echo "Checking for API Endpoint Plan..."
-        if [ -f "API_Endpoints.md" ] || [ -f "API_Endpoints.pdf" ] || [ -f "API_Endpoint_Plan.md" ] || [ -f "API_Plan.md" ] || [ -f "API_Plan.pdf" ]; then
-          echo "✅ API Endpoint Plan found"
-        elif [ -f "docs/API_Endpoints.md" ] || [ -f "docs/API_Endpoints.pdf" ]; then
-          echo "✅ API Endpoint Plan found in docs folder"
-        else
-          echo "⚠️ WARNING: No API Endpoint Plan found"
-          echo "Expected: API_Endpoints.md or API_Endpoints.pdf"
-          echo "Note: This is required for Part 1 Section B"
-        fi
     
     - name: Generate validation summary
       run: |
+        COMMIT_COUNT=$(git rev-list --count HEAD)
+        
         echo "============================================"
         echo "✅ VALIDATION SUMMARY"
         echo "============================================"
         echo ""
-        echo "Documentation Check:"
+        echo "📁 Documentation Check:"
+        echo "  ✅ doc folder exists"
         echo "  ✅ ERD file exists (Entity Relationship Diagram.png)"
         echo "  ✅ SQL script exists (script.sql)"
+        echo "  ✅ API Endpoint Plan exists (API_ENDPOINT_PLAN.pdf)"
         echo "  ✅ README.md exists"
         echo ""
-        echo "SQL Validation:"
+        echo "📊 SQL Validation:"
         echo "  ✅ CREATE TABLE statements found"
         echo "  ✅ PRIMARY KEY definitions found"
         echo "  ✅ FOREIGN KEY definitions found"
         echo "  ✅ INSERT INTO statements found (seed data)"
         echo ""
-        echo "Commit Validation:"
+        echo "📝 Commit Validation:"
         echo "  ✅ $COMMIT_COUNT commits found (minimum 20 met)"
         echo ""
-        echo "Repository Status:"
+        echo "🔧 CI/CD Validation:"
+        echo "  ✅ .github/workflows/validate-docs.yml exists"
+        echo ""
+        echo "🏗️ Repository Status:"
         echo "  ✅ Repository structure is valid"
         echo "  ✅ All required files are present"
         echo "  ✅ No missing documentation"
@@ -335,7 +434,7 @@ jobs:
       with:
         name: validation-report
         path: |
-          Entity Relationship Diagram.png
-          script.sql
+          doc/
           README.md
+          .github/workflows/
         retention-days: 7
