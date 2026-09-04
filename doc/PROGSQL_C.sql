@@ -38,3 +38,36 @@ CREATE TABLE Organiser
 );
 GO
 
+-- 2. Participant table
+CREATE TABLE Participant
+(
+    participantID INT IDENTITY(1,1) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    passwordHash VARCHAR(255) NOT NULL,
+    dateOfBirth DATE NOT NULL,
+    idNumber VARCHAR(50) NOT NULL UNIQUE,
+    emergencyContact VARCHAR(100) NOT NULL,
+    createdAt DATETIME NOT NULL DEFAULT GETDATE()
+);
+GO
+
+-- 3. Event table
+CREATE TABLE Event
+(
+    eventID INT IDENTITY(1,1) PRIMARY KEY,
+    organiserID INT NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    description VARCHAR(500) NULL,
+    date DATE NOT NULL,
+    location VARCHAR(200) NOT NULL,
+    maxParticipants INT NOT NULL CHECK (maxParticipants > 0),
+    status VARCHAR(50) NOT NULL DEFAULT 'Upcoming' 
+        CHECK (status IN ('Upcoming', 'Open', 'Closed', 'Completed', 'Cancelled')),
+
+    CONSTRAINT FK_Event_Organiser
+        FOREIGN KEY (organiserID)
+        REFERENCES Organiser(organiserID)
+        ON DELETE CASCADE
+);
+GO
