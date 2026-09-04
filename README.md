@@ -41,64 +41,7 @@
 ## 🗄️ Database Schema
 
 ### Entity Relationship Diagram (ERD)
-┌─────────────────┐ ┌─────────────────┐
-│ Organiser │ │ Participant │
-├─────────────────┤ ├─────────────────┤
-│ OrganiserID (PK)│ │ ParticipantID(PK)│
-│ Name │ │ Name │
-│ Email │ │ Email │
-│ Phone │ │ PasswordHash │
-│ PasswordHash │ │ DateOfBirth │
-│ CreatedAt │ │ IdNumber │
-└────────┬────────┘ │ EmergencyContact │
-│ │ CreatedAt │
-│ 1 └────────┬────────┘
-│ │
-│ M │ M
-▼ ▼
-┌─────────────────┐ ┌─────────────────┐
-│ Event │─────────▶│ Result │
-├─────────────────┤ M ├─────────────────┤
-│ EventId (PK) │ │ ResultID (PK) │
-│ OrganiserID (FK)│ │ EventID (FK) │
-│ Name │ │ ParticipantID(FK)│
-│ Description │ │ CategoryID (FK) │
-│ Date │ │ FinishTime │
-│ Location │ │ Position │
-│ MaxParticipants │ │ Status │
-│ Status │ └─────────────────┘
-└────────┬────────┘ ▲
-│ 1 │
-│ │
-▼ │
-┌─────────────────┐ ┌─────────────────┐
-│ Category │──────────│ │
-├─────────────────┤ M │ │
-│ CategoryID (PK) │ │ │
-│ EventID (FK) │ │ │
-│ Name │ │ │
-│ DistanceKM │ │ │
-│ StartTime │ │ │
-│ AgeMin │ │ │
-│ AgeMax │ │ │
-│ EntryFee │ │ │
-└─────────────────┘ └─────────────────┘
-▲
-│ 1
-│
-▼
-┌─────────────────┐
-│ Weather │
-├─────────────────┤
-│ WeatherID (PK) │
-│ EventID (FK) │
-│ ForecastDate │
-│ Temperature │
-│ Condition │
-│ WindSpeed │
-│ Humidity │
-└─────────────────┘
-
+https://github.com/ST10471198/race-day-ST10471198-L-Ramasuvha-prog6212/blob/main/doc/ERD%20DIAGRAM
 
 ### Database Tables
 
