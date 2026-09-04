@@ -41,7 +41,7 @@
 ## 🗄️ Database Schema
 
 ### Entity Relationship Diagram (ERD)
-https://github.com/ST10471198/race-day-ST10471198-L-Ramasuvha-prog6212/blob/main/doc/ERD%20DIAGRAM
+doc/Entity Relationship Diagram.png
 
 ### Database Tables
 
