@@ -12,7 +12,7 @@ jobs:
     
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0  # Fetch all history for commit count
     
@@ -294,24 +294,19 @@ jobs:
         
         echo "✅ ERD file found: $ERD_FILE"
         
-        # Check file size (only for image files)
-        if [[ "$ERD_FILE" == *.png ]] || [[ "$ERD_FILE" == *.PNG ]]; then
-          if command -v identify &> /dev/null; then
-            identify "$ERD_FILE" || echo "⚠️ Could not verify image format"
-          else
-            if [[ "$OSTYPE" == "darwin"* ]]; then
-              # macOS
-              FILE_SIZE=$(stat -f%z "$ERD_FILE" 2>/dev/null || echo "0")
-            else
-              # Linux
-              FILE_SIZE=$(stat -c%s "$ERD_FILE" 2>/dev/null || echo "0")
-            fi
-            if [ "$FILE_SIZE" -gt 10000 ]; then
-              echo "✅ ERD file size: $(($FILE_SIZE / 1024)) KB (valid)"
-            else
-              echo "⚠️ WARNING: ERD file appears small ($(($FILE_SIZE / 1024)) KB)"
-            fi
-          fi
+        # Check file size
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+          # macOS
+          FILE_SIZE=$(stat -f%z "$ERD_FILE" 2>/dev/null || echo "0")
+        else
+          # Linux
+          FILE_SIZE=$(stat -c%s "$ERD_FILE" 2>/dev/null || echo "0")
+        fi
+        
+        if [ "$FILE_SIZE" -gt 10000 ]; then
+          echo "✅ ERD file size: $(($FILE_SIZE / 1024)) KB (valid)"
+        else
+          echo "⚠️ WARNING: ERD file appears small ($(($FILE_SIZE / 1024)) KB)"
         fi
         
         echo "============================================"
@@ -401,9 +396,9 @@ jobs:
         echo ""
         echo "📁 Documentation Check:"
         echo "  ✅ doc folder exists"
-        echo "  ✅ ERD file exists (Entity Relationship Diagram.png)"
-        echo "  ✅ SQL script exists (script.sql)"
-        echo "  ✅ API Endpoint Plan exists (API_ENDPOINT_PLAN.pdf)"
+        echo "  ✅ ERD file exists"
+        echo "  ✅ SQL script exists"
+        echo "  ✅ API Endpoint Plan exists"
         echo "  ✅ README.md exists"
         echo ""
         echo "📊 SQL Validation:"
@@ -429,7 +424,7 @@ jobs:
         echo "============================================"
     
     - name: Upload validation report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4  # Updated to v4
       if: always()
       with:
         name: validation-report
@@ -438,3 +433,4 @@ jobs:
           README.md
           .github/workflows/
         retention-days: 7
+        if-no-files-found: warn
